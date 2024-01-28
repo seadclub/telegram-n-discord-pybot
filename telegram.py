@@ -20,11 +20,10 @@ async def send_info(message):
 async def handle_unknown_commands(message):
     await bot.reply_to(message, "Unrecognized command. Type /help")
 
-
-# Handle '*' all messages
-@bot.message_handler(func=lambda message: True, content_types=['text'])
-async def handle_unknown_messages(message):
-    await send_info(message)
+# Handle 'appreciation'
+@bot.message_handler(func=lambda message: any(word in message.text.lower() for word in ['thanks', 'thx', 'thank']))
+async def handle_all_messages(message):
+    await bot.reply_to(message, f'{message.from_user.id} + 1')
 
 
 
