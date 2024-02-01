@@ -1,0 +1,9 @@
+# requirements.txt
+
+# core deps
+requests==2.31.0
+discord.py==2.3.2
+aiogram==3.3.0
+
+# testing
+pytest==8.0.0
