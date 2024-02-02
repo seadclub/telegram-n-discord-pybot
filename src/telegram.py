@@ -1,5 +1,5 @@
 import os
-from dotenv import load_dotenv, dotenv_values
+from dotenv import load_dotenv
 from telebot.async_telebot import AsyncTeleBot
 import asyncio
 import aiosqlite
@@ -20,7 +20,11 @@ async def send_info(message):
 # Handle '/*' all unknown commands
 @bot.message_handler(func=lambda message: message.text.startswith('/'))
 async def handle_unknown_commands(message):
-    await bot.reply_to(message, "Unrecognized command. Type /help")
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except:
+        print('It seems desired message doesn\'t exist.')
+
 
 # Handle 'appreciation'
 @bot.message_handler(func=lambda message: any(word in message.text.lower() for word in ['thanks', 'thx', 'thank']))
