@@ -24,17 +24,17 @@ def admin_only(func):
 
 
 # Handle '/start'
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start'], func=lambda message: message.chat.type in ['group', 'supergroup'])
 async def send_welcome(message):
     await bot.reply_to(message, 'Hi, I\'m a TG Bot!')
 
 # Handle '/help'
-@bot.message_handler(commands=['help'])
+@bot.message_handler(commands=['help'], func=lambda message: message.chat.type in ['group', 'supergroup'])
 async def send_info(message):
     await bot.reply_to(message, "For assistance or feedback, DM me on Telegram: @lxudrr.")
     
 # Handle '/*' all unknown commands
-@bot.message_handler(func=lambda message: message.text.startswith('/'))
+@bot.message_handler(func=lambda message: message.text.startswith('/') and message.chat.type in ['group', 'supergroup'])
 async def handle_unknown_commands(message):
     try:
         await bot.delete_message(message.chat.id, message.message_id)
@@ -43,7 +43,7 @@ async def handle_unknown_commands(message):
 
 
 # Handle 'appreciation'
-@bot.message_handler(func=lambda message: any(word in message.text.lower() for word in ['thanks', 'thx', 'thank', 'дякую']))
+@bot.message_handler(func=lambda message: any(word in message.text.lower() for word in ['thanks', 'thx', 'thank', 'дякую']) and message.chat.type in ['group', 'supergroup'])
 async def handle_all_messages(message):
     try:
         message_sender = message.from_user
