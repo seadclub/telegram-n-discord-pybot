@@ -7,6 +7,22 @@ import aiosqlite
 load_dotenv()  # take environment variables from .env.
 bot = AsyncTeleBot(os.getenv('TELEGRAM_API_TOKEN'))
 
+
+# admin wrapper
+def admin_only(func):
+    async def wrapper(message):
+        user_info = await bot.get_chat_member(message.chat.id, message.from_user.id)
+
+        if user_info.status in ['creator', 'administrator']:
+            await func(message)
+        else:
+            try:
+                await bot.delete_message(message.chat.id, message.message_id)
+            except:
+                print('Can\'t delete message')
+    return wrapper        
+
+
 # Handle '/start'
 @bot.message_handler(commands=['start'])
 async def send_welcome(message):
