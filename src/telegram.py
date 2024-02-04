@@ -30,6 +30,19 @@ def group_only(func):
 
     return wrapper
 
+# ban a user
+@bot.message_handler(commands=['ban', 'kick'])
+@group_only
+@admin_only
+async def ban(message):
+    try:
+        if message.reply_to_message:
+            await bot.ban_chat_member(message.chat.id, message.reply_to_message.from_user.id)
+        else:
+            await bot.delete_message(message.chat.id, message.message_id)
+    except:
+        print('Unable to ban a user')
+
 
 # Handle '/start'
 @bot.message_handler(commands=['start'])
@@ -49,6 +62,7 @@ async def send_info(message):
 async def handle_unknown_commands(message):
     try:
         await bot.delete_message(message.chat.id, message.message_id)
+        print("uknownd")
     except:
         print('It seems desired message doesn\'t exist.')
 
