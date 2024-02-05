@@ -9,8 +9,8 @@ Seadman Automation Helper is a Python-based tool designed to serve as a bridge b
 ### Prerequisites
 
 - Python 3.x
-- Discord.py
-- Aiogram
+- Discord
+- Telegram
 
 Install the required dependencies using:
 
