@@ -27,7 +27,6 @@ def group_only(func):
     async def wrapper(message):
         if message.chat.type in ['group', 'supergroup']:
             await func(message)
-
     return wrapper
 
 # ban a user
@@ -38,10 +37,20 @@ async def ban(message):
     try:
         if message.reply_to_message:
             await bot.ban_chat_member(message.chat.id, message.reply_to_message.from_user.id)
+            await bot.delete_message(message.chat.id, message.message_id)
         else:
             await bot.delete_message(message.chat.id, message.message_id)
     except:
         print('Unable to ban a user')
+
+
+@bot.message_handler(func=lambda message: True, content_types=['new_chat_members', 'left_chat_member'])
+async def delete_invite_message(message):
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+    except:
+        print("Failed to delete message")
+
 
 
 # Handle '/start'
