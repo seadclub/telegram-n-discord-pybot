@@ -11,22 +11,25 @@ bot = AsyncTeleBot(os.getenv('TELEGRAM_API_TOKEN'))
 # admin wrapper
 def admin_only(func):
     async def wrapper(message):
-        user_info = await bot.get_chat_member(message.chat.id, message.from_user.id)
+        try:
+            user_info = await bot.get_chat_member(message.chat.id, message.from_user.id)
 
-        if user_info.status in ['creator', 'administrator']:
-            await func(message)
-        else:
-            try:
+            if user_info.status in ['creator', 'administrator']:
+                await func(message)
+            else:
                 await bot.delete_message(message.chat.id, message.message_id)
-            except:
-                print('Can\'t delete message')
+        except Exception as e:
+            print(f'Error in the admin_only wrapper func: {e}')
     return wrapper        
 
 # group only wrapper
 def group_only(func):
     async def wrapper(message):
-        if message.chat.type in ['group', 'supergroup']:
-            await func(message)
+        try:
+            if message.chat.type in ['group', 'supergroup']:
+                await func(message)
+        except Exception as e:
+            print(f'Error in the group_only wrapper func: {e}')
     return wrapper
 
 # ban a user
@@ -40,16 +43,16 @@ async def ban(message):
             await bot.delete_message(message.chat.id, message.message_id)
         else:
             await bot.delete_message(message.chat.id, message.message_id)
-    except:
-        print('Unable to ban a user')
+    except Exception as e:
+        print(f'Error in the ban func: {e}')
 
 
 @bot.message_handler(func=lambda message: True, content_types=['new_chat_members', 'left_chat_member'])
 async def delete_invite_message(message):
     try:
         await bot.delete_message(message.chat.id, message.message_id)
-    except:
-        print("Failed to delete message")
+    except Exception as e:
+        print(f'Error in the delete_invite_message func: {e}')
 
 
 
@@ -69,11 +72,7 @@ async def send_info(message):
 @bot.message_handler(func=lambda message: message.text.startswith('/'))
 @group_only
 async def handle_unknown_commands(message):
-    try:
-        await bot.delete_message(message.chat.id, message.message_id)
-        print("uknownd")
-    except:
-        print('It seems desired message doesn\'t exist.')
+    await bot.delete_message(message.chat.id, message.message_id)
 
 
 # Handle 'appreciation'
@@ -127,8 +126,8 @@ async def handle_all_messages(message):
 
                 await connection.commit()
                 await cursor.close()
-    except:
-        print('Unable to make a gratitude.')
+    except Exception as e:
+        print(f'Error in the handle_all_messages func: {e}')
 
 
 async def connection_to_db():
@@ -136,7 +135,6 @@ async def connection_to_db():
     async with aiosqlite.connect('users.sqlite3') as connection:
         # used for handling different tasks with db
         cursor = await connection.cursor()
-
         # used to prepare table creation
         await cursor.execute('''CREATE TABLE IF NOT EXISTS users
                              (id integer PRIMARY KEY,
