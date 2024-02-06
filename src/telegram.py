@@ -46,15 +46,13 @@ async def ban(message):
     except Exception as e:
         print(f'Error in the ban func: {e}')
 
-
+# Delete info messages
 @bot.message_handler(func=lambda message: True, content_types=['new_chat_members', 'left_chat_member'])
-async def delete_invite_message(message):
+async def delete_info_message(message):
     try:
         await bot.delete_message(message.chat.id, message.message_id)
     except Exception as e:
         print(f'Error in the delete_invite_message func: {e}')
-
-
 
 # Handle '/start'
 @bot.message_handler(commands=['start'])
@@ -73,7 +71,6 @@ async def send_info(message):
 @group_only
 async def handle_unknown_commands(message):
     await bot.delete_message(message.chat.id, message.message_id)
-
 
 # Handle 'appreciation'
 @bot.message_handler(func=lambda message: any(word in message.text.lower() for word in ['thanks', 'thx', 'thank', 'дякую']))
