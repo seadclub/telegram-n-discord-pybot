@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from telebot.async_telebot import AsyncTeleBot
 import asyncio
 import aiosqlite
+from time import time
 
 load_dotenv()  # take environment variables from .env.
 bot = AsyncTeleBot(os.getenv('TELEGRAM_API_TOKEN'))
@@ -45,6 +46,18 @@ async def ban(message):
             await bot.delete_message(message.chat.id, message.message_id)
     except Exception as e:
         print(f'Error in the ban func: {e}')
+
+# mute a user
+@bot.message_handler(commands=['mute'])
+@group_only
+@admin_only
+async def mute(message):
+    try:
+        await bot.delete_message(message.chat.id, message.message_id)
+        mute_time = int(time()) + int(message.text.split(' ')[1])
+        await bot.restrict_chat_member(message.chat.id, message.reply_to_message.from_user.id, mute_time)
+    except Exception as e:
+        print(f'Error in the mute func: {e}')
 
 # Delete info messages
 @bot.message_handler(func=lambda message: True, content_types=['new_chat_members', 'left_chat_member'])
