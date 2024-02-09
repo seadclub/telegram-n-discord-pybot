@@ -40,8 +40,11 @@ def group_only(func):
 async def ban(message):
     try:
         if message.reply_to_message:
-            await bot.ban_chat_member(message.chat.id, message.reply_to_message.from_user.id)
-            await bot.delete_message(message.chat.id, message.message_id)
+            if not message.reply_to_message.from_user.is_bot and not (await bot.get_chat_member(message.chat.id, message.reply_to_message.from_user.id)).status in ['creator', 'administrator']:
+                await bot.ban_chat_member(message.chat.id, message.reply_to_message.from_user.id)
+                await bot.delete_message(message.chat.id, message.message_id)
+            else:
+                await bot.delete_message(message.chat.id, message.message_id)
         else:
             await bot.delete_message(message.chat.id, message.message_id)
     except Exception as e:
