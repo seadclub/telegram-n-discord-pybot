@@ -56,9 +56,15 @@ async def ban(message):
 @admin_only
 async def mute(message):
     try:
-        await bot.delete_message(message.chat.id, message.message_id)
-        mute_time = int(time()) + int(message.text.split(' ')[1])
-        await bot.restrict_chat_member(message.chat.id, message.reply_to_message.from_user.id, mute_time)
+        if message.reply_to_message:
+            if not message.reply_to_message.from_user.is_bot and not (await bot.get_chat_member(message.chat.id, message.reply_to_message.from_user.id)).status in ['creator', 'administrator']:
+                mute_time = int(time()) + int(message.text.split(' ')[1])*60
+                await bot.restrict_chat_member(message.chat.id, message.reply_to_message.from_user.id, mute_time)
+                await bot.delete_message(message.chat.id, message.message_id)
+            else:
+                await bot.delete_message(message.chat.id, message.message_id)
+        else:
+            await bot.delete_message(message.chat.id, message.message_id)
     except Exception as e:
         print(f'Error in the mute func: {e}')
 
