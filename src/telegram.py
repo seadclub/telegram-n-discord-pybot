@@ -27,7 +27,7 @@ def admin_only(func):
 def group_only(func):
     async def wrapper(message):
         try:
-            if message.chat.type in ['group', 'supergroup']:
+            if message.chat.type in ['supergroup']:
                 await func(message)
         except Exception as e:
             print(f'Error in the group_only wrapper func: {e}')
@@ -151,7 +151,7 @@ async def handle_all_messages(message):
 
 async def connection_to_db():
     # creating and connecting to the db
-    async with aiosqlite.connect('users.sqlite3') as connection:
+    async with aiosqlite.connect('db.sqlite3') as connection:
         # used for handling different tasks with db
         cursor = await connection.cursor()
         # used to prepare table creation
