@@ -159,8 +159,12 @@ async def connection_to_db():
                              (id integer PRIMARY KEY,
                              user_id integer,
                              gratitudes integer)''')
-    
-        # used to create a table
+
+        await cursor.execute('''CREATE TABLE IF NOT EXISTS topics
+                             (id integer PRIMARY KEY,
+                             topic_id integer,
+                             name char(100))''')
+
         await connection.commit()
         await cursor.close()
 
