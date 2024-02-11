@@ -98,7 +98,6 @@ async def update_info_about_topics(message):
 @bot.message_handler(commands=['start'])
 @group_only
 async def send_welcome(message):
-    print(message.chat.id)
     await bot.reply_to(message, 'Hi, I\'m a TG Bot!')
 
 # Handle '/help'
@@ -107,12 +106,6 @@ async def send_welcome(message):
 async def send_info(message):
     await bot.reply_to(message, "For assistance or feedback, DM me on Telegram: @lxudrr.")
     
-# Handle '/*' all unknown commands
-@bot.message_handler(func=lambda message: message.text.startswith('/'))
-@group_only
-async def handle_unknown_commands(message):
-    await bot.delete_message(message.chat.id, message.message_id)
-
 # Handle 'appreciation'
 @bot.message_handler(func=lambda message: any(word in message.text.lower() for word in ['thanks', 'thx', 'thank', 'дякую']))
 @group_only
@@ -167,6 +160,26 @@ async def handle_all_messages(message):
     except Exception as e:
         print(f'Error in the handle_all_messages func: {e}')
 
+# Forward message
+@bot.message_handler(func=lambda message: message.text.startswith('/'))
+@admin_only
+@group_only
+async def forward_message(message):
+    try:
+        async with aiosqlite.connect('db.sqlite3') as connection:
+            cursor = await connection.cursor()
+            await cursor.execute('SELECT * FROM topics')
+            topic_names = await cursor.fetchall()
+            await cursor.close()
+        for value in topic_names:
+            if message.text[1:] == value[2]:
+                await bot.forward_message(message.chat.id, message.chat.id, message.reply_to_message.id, message_thread_id=value[1])
+                await bot.delete_messages(message.chat.id, [message.message_id, message.reply_to_message.id])
+                return
+        await bot.delete_message(message.chat.id, message.message_id)
+    except Exception as e:
+        await bot.delete_message(message.chat.id, message.message_id)
+        print(f'Error in the forward_message func: {e}')
 
 async def connection_to_db():
     # creating and connecting to the db
