@@ -76,10 +76,29 @@ async def delete_info_message(message):
     except Exception as e:
         print(f'Error in the delete_invite_message func: {e}')
 
+# Update info about topics
+@bot.message_handler(func=lambda message: True, content_types=['forum_topic_created', 'forum_topic_edited'])
+async def update_info_about_topics(message):
+    try:
+        # update db
+        async with aiosqlite.connect('db.sqlite3') as connection:
+            cursor = await connection.cursor()
+        
+            if message.content_type == 'forum_topic_created':
+                await cursor.execute(f'INSERT INTO topics (topic_id, name) VALUES ({message.message_thread_id}, "{message.forum_topic_created.name}")')
+            elif message.content_type == 'forum_topic_edited':    
+                await cursor.execute(f'UPDATE topics SET name = "{message.forum_topic_edited.name}" WHERE topic_id = {message.message_thread_id}')
+
+            await connection.commit()
+            await cursor.close()
+    except Exception as e:
+        print(f'Error in the update_info_about_topics func: {e}')
+
 # Handle '/start'
 @bot.message_handler(commands=['start'])
 @group_only
 async def send_welcome(message):
+    print(message.chat.id)
     await bot.reply_to(message, 'Hi, I\'m a TG Bot!')
 
 # Handle '/help'
