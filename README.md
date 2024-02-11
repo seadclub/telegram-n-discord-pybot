@@ -23,7 +23,7 @@ pip install -r requirements.txt
 - `/start`: shows general info
 - `/help`: shows contact you can report to
 - `/ban`: allows you to restrict an access to someone from a group (*reply to act*)
-- `/mute <seconds>`: allows you to mute a person for a certain time (*reply to act*)
+- `/mute <minutes>`: allows you to mute a person for a certain time (*reply to act*)
 
 ### Running the Application
 
