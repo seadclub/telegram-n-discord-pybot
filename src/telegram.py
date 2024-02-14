@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from telebot.async_telebot import AsyncTeleBot
 import asyncio
-import aiosqlite
 from time import time
+from db import *
 
 load_dotenv()  # take environment variables from .env.
 bot = AsyncTeleBot(os.getenv('TELEGRAM_API_TOKEN'))
@@ -175,26 +175,7 @@ async def forward_message(message):
         await bot.delete_message(message.chat.id, message.message_id)
         print(f'Error in the forward_message func: {e}')
 
-async def connection_to_db():
-    # creating and connecting to the db
-    async with aiosqlite.connect('db.sqlite3') as connection:
-        # used for handling different tasks with db
-        cursor = await connection.cursor()
-        # used to prepare table creation
-        await cursor.execute('''CREATE TABLE IF NOT EXISTS users
-                             (id integer PRIMARY KEY,
-                             user_id integer,
-                             gratitudes integer)''')
 
-        await cursor.execute('''CREATE TABLE IF NOT EXISTS topics
-                             (id integer PRIMARY KEY,
-                             topic_id integer,
-                             name char(100))''')
-
-        await connection.commit()
-        await cursor.close()
-
-
-if __name__ == '__main__':    
+if __name__ == '__main__': 
     asyncio.get_event_loop().run_until_complete(connection_to_db())
     asyncio.run(bot.polling())
