@@ -94,12 +94,6 @@ async def update_info_about_topics(message):
     except Exception as e:
         print(f'Error in the update_info_about_topics func: {e}')
 
-# Handle '/start'
-@bot.message_handler(commands=['start'])
-@group_only
-async def send_welcome(message):
-    await bot.reply_to(message, 'Hi, I\'m a TG Bot!')
-
 # Handle '/help'
 @bot.message_handler(commands=['help'])
 @group_only
