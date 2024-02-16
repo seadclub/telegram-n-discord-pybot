@@ -132,10 +132,12 @@ async def handle_all_messages(message):
             await connection.commit()
             await cursor.close()
 
+# Initialize the subtopic
+
 # Forward message
 @bot.message_handler(func=lambda message: message.text.startswith('/'))
-@admin_only
 @group_only
+@admin_only
 async def forward_message(message):
     try:
         async with aiosqlite.connect('db.sqlite3') as connection:
