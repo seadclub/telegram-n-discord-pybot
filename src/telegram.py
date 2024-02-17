@@ -132,6 +132,15 @@ async def handle_all_messages(message):
             await connection.commit()
             await cursor.close()
 
+# general announcement
+@bot.message_handler(commands=['!'])
+@try_except
+@group_only
+@admin_only
+async def announcement(message):
+    message_text = ' '.join(message.text.split(' ')[1:])
+
+
 # Initialize the subtopic
 
 # Forward message
