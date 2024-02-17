@@ -94,7 +94,7 @@ async def send_info(message):
     await bot.reply_to(message, "For assistance or feedback, DM me on Telegram: @lxudrr.")
     
 # Handle 'appreciation'
-@bot.message_handler(func=lambda message: any(word in message.text.lower() for word in ['thanks', 'thx', 'thank', 'дякую']))
+@bot.message_handler(func=lambda message: any(word in message.text.lower() for word in ['thx', 'thank', 'дякую']))
 @try_except
 @group_only
 async def handle_all_messages(message):
