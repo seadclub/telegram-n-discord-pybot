@@ -75,11 +75,14 @@ async def update_info_about_topics(message):
     # update db
     async with aiosqlite.connect('db.sqlite3') as connection:
         cursor = await connection.cursor()
-    
         if message.content_type == 'forum_topic_created':
             await cursor.execute(f'INSERT INTO topics (topic_id, name) VALUES ({message.message_thread_id}, "{message.forum_topic_created.name}")')
-        elif message.content_type == 'forum_topic_edited':    
-            await cursor.execute(f'UPDATE topics SET name = "{message.forum_topic_edited.name}" WHERE topic_id = {message.message_thread_id}')
+        elif message.content_type == 'forum_topic_edited':
+            if await (await cursor.execute(f'SELECT topic_id FROM topics WHERE topic_id = {message.message_thread_id}')).fetchone():
+                await cursor.execute(f'UPDATE topics SET name = "{message.forum_topic_edited.name}" WHERE topic_id = {message.message_thread_id}')
+            else:
+                await cursor.execute(f'INSERT INTO topics (topic_id, name) VALUES ({message.message_thread_id}, "{message.forum_topic_edited.name}")')
+            await bot.delete_message(message.chat.id, message.message_id)
         await connection.commit()
         await cursor.close()
 
