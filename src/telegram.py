@@ -7,7 +7,7 @@ from time import time
 
 load_dotenv()  # take environment variables from .env.
 bot = AsyncTeleBot(os.getenv('TELEGRAM_API_TOKEN'))
-
+db_location = os.path.dirname(os.path.abspath(__file__)) + '/db.sqlite3'
 
 # admin wrapper
 def admin_only(func):
@@ -73,7 +73,7 @@ async def delete_info_message(message):
 @try_except
 async def update_info_about_topics(message):
     # update db
-    async with aiosqlite.connect('db.sqlite3') as connection:
+    async with aiosqlite.connect(db_location) as connection:
         cursor = await connection.cursor()
         if message.content_type == 'forum_topic_created':
             await cursor.execute(f'INSERT INTO topics (topic_id, name) VALUES ({message.message_thread_id}, "{message.forum_topic_created.name}")')
@@ -104,7 +104,7 @@ async def handle_all_messages(message):
     if message_sender.id != message_receiver.id:
         
         # update db
-        async with aiosqlite.connect('db.sqlite3') as connection:
+        async with aiosqlite.connect(db_location) as connection:
             cursor = await connection.cursor()
             # Fetch all user IDs from the database
             await cursor.execute('SELECT * FROM users')
@@ -124,7 +124,7 @@ async def handle_all_messages(message):
             await connection.commit()
             await cursor.close()
         # show output 
-        async with aiosqlite.connect('db.sqlite3') as connection:
+        async with aiosqlite.connect(db_location) as connection:
             cursor = await connection.cursor()
             await cursor.execute(f'SELECT gratitudes FROM users WHERE user_id = {message_sender.id}')
             message_sender_gratitudes = (await cursor.fetchone())[0]
@@ -149,7 +149,7 @@ async def announcement(message):
 @admin_only
 async def forward_message(message):
     try:
-        async with aiosqlite.connect('db.sqlite3') as connection:
+        async with aiosqlite.connect(db_location) as connection:
             cursor = await connection.cursor()
             await cursor.execute('SELECT * FROM topics')
             topic_names = await cursor.fetchall()
@@ -166,7 +166,7 @@ async def forward_message(message):
 
 async def connection_to_db():
     # creating and connecting to the db
-    async with aiosqlite.connect('db.sqlite3') as connection:
+    async with aiosqlite.connect(db_location) as connection:
         # used for handling different tasks with db
         cursor = await connection.cursor()
         # used to prepare table creation
