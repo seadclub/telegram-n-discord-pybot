@@ -69,16 +69,28 @@ async def delete_info_message(message):
     await bot.delete_message(message.chat.id, message.message_id)
 
 # Update info about topics
-@bot.message_handler(func=lambda message: True, content_types=['forum_topic_created', 'forum_topic_edited'])
+@bot.message_handler(content_types=['forum_topic_created', 'forum_topic_edited'])
 @try_except
 async def update_info_about_topics(message):
     # update db
     async with aiosqlite.connect(db_location) as connection:
         cursor = await connection.cursor()
         if message.content_type == 'forum_topic_created':
-            await cursor.execute(f'INSERT INTO topics (topic_id, name) VALUES ({message.message_thread_id}, "{message.forum_topic_created.name}")')
+            # check whether the main (topic that is created when channel was created) topic is edited
+            if message.message_thread_id == None:
+                await cursor.execute(f'INSERT INTO topics (topic_id, name) VALUES ({message.chat.id}, "{message.forum_topic_created.name}")')
+
+            else:
+                await cursor.execute(f'INSERT INTO topics (topic_id, name) VALUES ({message.message_thread_id}, "{message.forum_topic_created.name}")')
         elif message.content_type == 'forum_topic_edited':
-            if await (await cursor.execute(f'SELECT topic_id FROM topics WHERE topic_id = {message.message_thread_id}')).fetchone():
+            # check whether the main (topic that is created when channel was created) topic is edited
+            if message.message_thread_id == None:
+                if await (await cursor.execute(f'SELECT topic_id FROM topics WHERE topic_id = {message.chat.id}')).fetchone():
+                    await cursor.execute(f'UPDATE topics SET name = "{message.forum_topic_edited.name}" WHERE topic_id = {message.chat.id}')
+                else:
+                    await cursor.execute(f'INSERT INTO topics (topic_id, name) VALUES ({message.chat.id}, "{message.forum_topic_edited.name}")')
+                    
+            elif await (await cursor.execute(f'SELECT topic_id FROM topics WHERE topic_id = {message.message_thread_id}')).fetchone():
                 await cursor.execute(f'UPDATE topics SET name = "{message.forum_topic_edited.name}" WHERE topic_id = {message.message_thread_id}')
             else:
                 await cursor.execute(f'INSERT INTO topics (topic_id, name) VALUES ({message.message_thread_id}, "{message.forum_topic_edited.name}")')
