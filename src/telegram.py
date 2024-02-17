@@ -143,9 +143,6 @@ async def handle_all_messages(message):
 async def announcement(message):
     message_text = ' '.join(message.text.split(' ')[1:])
 
-
-# Initialize the subtopic
-
 # Forward message
 @bot.message_handler(func=lambda message: message.text.startswith('/'))
 @group_only
