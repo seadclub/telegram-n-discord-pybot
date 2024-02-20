@@ -98,6 +98,16 @@ async def update_info_about_topics(message):
         await connection.commit()
         await cursor.close()
 
+# general announcement
+@bot.message_handler(func=lambda message: message.text[0] == '!')
+@try_except
+@group_only
+@admin_only
+async def announcement(message):
+    message_text = message.text[1:]
+    await bot.send_message(message.chat.id, text=message_text, message_thread_id=3)
+    await bot.delete_message(message.chat.id, message.id)
+
 # Handle '/help'
 @bot.message_handler(commands=['help'])
 @try_except
@@ -147,14 +157,6 @@ async def handle_all_messages(message):
             await connection.commit()
             await cursor.close()
 
-# general announcement
-@bot.message_handler(commands=['!'])
-@try_except
-@group_only
-@admin_only
-async def announcement(message):
-    message_text = ' '.join(message.text.split(' ')[1:])
-
 # Forward message
 @bot.message_handler(func=lambda message: message.text.startswith('/'))
 @group_only
@@ -194,6 +196,8 @@ async def connection_to_db():
 
         await connection.commit()
         await cursor.close()
+
+
 
 
 if __name__ == '__main__':    
