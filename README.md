@@ -20,10 +20,11 @@ pip install -r requirements.txt
 
 ## Usage
 
-- `/start`: shows general info
-- `/help`: shows contact you can report to
-- `/ban`: allows you to restrict an access to someone from a group (*reply to act*)
+- `/help`: shows help menu
+- `/ban` / `/kick`: allows you to restrict an access to someone from a group (*reply to act*)
 - `/mute <minutes>`: allows you to mute a person for a certain time (*reply to act*)
+- `!<message>`: sends message in the important topic
+- `/<reply on a message with a name of the topic>`: forwards message to the specific topic on behalf of a bot
 
 ### Running the Application
 
