@@ -118,13 +118,13 @@ async def send_info(message):
 <b>Commands</b>:                       
 - /help: shows help menu
                        
-- /ban or /kick: allows you to restrict access to someone from a group (reply to act)
+- /ban or /kick: allows you to restrict access to someone from a group (reply on a message to act)
                        
-- /mute &lt;minutes&gt;: allows you to mute a person for a certain time (reply to act)
+- /mute &lt;minutes&gt;: allows you to mute a person for a certain time (reply on a message to act)
 
 - !&lt;message&gt;: sends message in the important topic
                        
-- /&lt;name of the topic&gt;: forwards message to the specific topic (reply to act)''', parse_mode='HTML')
+- /&lt;name of the topic&gt;: forwards message to the specific topic (reply on a message to act)''', parse_mode='HTML')
 
     
 # Handle 'appreciation'
