@@ -113,7 +113,19 @@ async def announcement(message):
 @try_except
 @group_only
 async def send_info(message):
-    await bot.reply_to(message, "For assistance or feedback, DM me on Telegram: @lxudrr.")
+    await bot.reply_to(message, '''For assistance or feedback, DM me on Telegram: @lxudrr
+
+<b>Commands</b>:                       
+- /help: shows help menu
+                       
+- /ban or /kick: allows you to restrict access to someone from a group (reply to act)
+                       
+- /mute &lt;minutes&gt;: allows you to mute a person for a certain time (reply to act)
+
+- !&lt;message&gt;: sends message in the important topic
+                       
+- /&lt;name of the topic&gt;: forwards message to the specific topic (reply to act)''', parse_mode='HTML')
+
     
 # Handle 'appreciation'
 @bot.message_handler(func=lambda message: any(word in message.text.lower() for word in ['thx', 'thank', 'дякую']))
